@@ -1,15 +1,19 @@
-import { Controller } from '@nestjs/common';
-import { Get, Param, Put } from '@nestjs/common/decorators';
+import { Controller, Get, Put, Param } from '@nestjs/common';
 import {
-  FindStudentResponseDto,
+  FindStudentsResponseDto,
   StudentResponseDto,
-} from '../sudent/dto/student.dto';
+} from 'src/sudent/dto/student.dto';
+import { StudentService } from 'src/sudent/student.service';
 
 @Controller('teachers/:teacherId/students')
 export class StudentTeacherController {
+  constructor(private readonly studentService: StudentService) {}
+
   @Get()
-  getStudents(@Param('teacherId') teacherId: string): FindStudentResponseDto {
-    return `Get all students that belong to the teacher with an id of ${teacherId}`;
+  getStudents(
+    @Param('teacherId') teacherId: string,
+  ): FindStudentsResponseDto[] {
+    return this.studentService.getStudentsByTeacherId(teacherId);
   }
 
   @Put('/:studentId')
@@ -17,6 +21,6 @@ export class StudentTeacherController {
     @Param('teacherId') teacherId: string,
     @Param('studentId') studentId: string,
   ): StudentResponseDto {
-    return `Upadte Student with id of ${studentId} to a teacher with id of ${teacherId} `;
+    return this.studentService.updateStudentTeacher(teacherId, studentId);
   }
 }

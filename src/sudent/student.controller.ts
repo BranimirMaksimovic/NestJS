@@ -1,27 +1,31 @@
-import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import {
+  FindStudentsResponseDto,
   CreateStudentDto,
-  UpdateStudentDto,
-  FindStudentResponseDto,
   StudentResponseDto,
+  UpdateStudentDto,
 } from './dto/student.dto';
+import { StudentService } from './student.service';
 
-@Controller('students') //all starts with /student
+@Controller('students')
 export class StudentController {
+  constructor(private readonly studentService: StudentService) {}
+
   @Get()
-  getStudents(): FindStudentResponseDto[] {
-    return 'All Students';
+  getStudent(): FindStudentsResponseDto[] {
+    return this.studentService.getStudents();
   }
-  @Get('/:studentId') // whole route is /students/:studentId
+
+  @Get('/:studentId')
   getStudentById(
     @Param('studentId') studentId: string,
-  ): FindStudentResponseDto[] {
-    return `Ge student with id of ${studentId}`;
+  ): FindStudentsResponseDto {
+    return this.studentService.getStudentById(studentId);
   }
 
   @Post()
-  createStudent(@Body() body: CreateStudentDto): StudentResponseDto[] {
-    return `Create student with the following data ${JSON.stringify(body)}`;
+  createStudent(@Body() body: CreateStudentDto): StudentResponseDto {
+    return this.studentService.createStudent(body);
   }
 
   @Put('/:studentId')
@@ -29,8 +33,6 @@ export class StudentController {
     @Param('studentId') studentId: string,
     @Body() body: UpdateStudentDto,
   ): StudentResponseDto {
-    return `Update student with id of ${studentId} with data of ${JSON.stringify(
-      body,
-    )}`;
+    return this.studentService.updateStudent(body, studentId);
   }
 }
